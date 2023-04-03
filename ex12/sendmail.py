@@ -8,12 +8,18 @@ from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from typing import List
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 def send_mail(send_from: str,
                 send_to: List[str],
                 subject: str,
                 text: str,
+                server: str,
+                port: int,
+                password: str,
                 files=[],
-                server="127.0.0.1"
             ):
     assert isinstance(send_to, list)
 
@@ -22,8 +28,9 @@ def send_mail(send_from: str,
     msg['To'] = COMMASPACE.join(send_to)
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
-
     msg.attach(MIMEText(text))
+    smtp_server = smtplib.SMTP_SSL(server, port)
+    smtp_server.login(send_from, password)
 
     for f in files:
         with open(f, "rb") as file:
@@ -35,9 +42,8 @@ def send_mail(send_from: str,
         msg.attach(part)
 
     try:
-        smtp = smtplib.SMTP(server)
-        smtp.sendmail(send_from, send_to, msg.as_string())
-        smtp.close()
+        smtp_server.sendmail(send_from, send_to, msg.as_string())
+        smtp_server.close()
     except smtplib.SMTPException:
         print("Error: unable to send email")
     except ValueError:
@@ -45,11 +51,18 @@ def send_mail(send_from: str,
     except:
         print("Error: unknown error")
         traceback.print_exc()
-
-send_mail(
-    send_from = input("Sender: "),
-    receivers = input("Receivers (separate with spaces): ").split(),
-    subject = input("Subject: "),
-    text = input("Body: "),
-    files = input("Files (separate with spaces): ").split(),
-)
+try:
+    send_mail(
+        send_from = os.environ["send_from"],
+        send_to = os.environ["send_to"].split(","),
+        subject = os.environ["subject"],
+        text = os.environ["text"],
+        server = os.environ["server"],
+        port = int(os.environ["port"]),
+        files = os.environ["files"].split(","), 
+        password = os.environ["password"],
+    )
+except KeyError:
+    print(".env not properly set")
+except ValueError:
+    print(".env contains an invalid port")
