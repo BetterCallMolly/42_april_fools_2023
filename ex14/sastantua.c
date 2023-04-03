@@ -1,8 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define BUFFER_SIZE 4096
-
 // Actually funnier to reverse engineer the binary than to write the code
 
 void ft_putchar(char c)
