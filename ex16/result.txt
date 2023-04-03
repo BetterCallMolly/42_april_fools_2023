@@ -1,5 +1,7 @@
-Tell me very a short joke
+Q: Tell me very a short joke
 
+
+A:
 Why don't scientists trust atoms?
 
 Because they make up everything!
