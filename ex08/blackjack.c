@@ -37,7 +37,7 @@ int card_value(char card, int *sum) {
         case 'Q': // Queen
         case 'K': // King
         case 'T': // Ten
-        case 'D': // Diamond
+        case 'D': // Dame (?)
             return 10;
         case 'A':
             if (*sum + 11 > 21)
